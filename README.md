@@ -17,21 +17,27 @@ See examples and the [API documentation] for more.
 
 ### Using mode method
 
-| ![captcha-mode-0.jpeg](images/captcha-mode-0.jpeg) | ![captcha-mode-0.jpeg](images/captcha-mode-1.jpeg) | ![captcha-mode-0.jpeg](images/captcha-mode-2.jpeg) |
-| -------------------------------------------------- | -------------------------------------------------- | -------------------------------------------------- |
-| CaptchaBuilder::new().mode(0)                      | CaptchaBuilder::new().mode(1)                      | CaptchaBuilder::new().mode(2)                      |
+| CaptchaBuilder::mode       | Captcha Preview                                    |
+| -------------------------- | -------------------------------------------------- |
+| mode(0): dark on light     | ![captcha-mode-0.jpeg](images/captcha-mode-0.jpeg) |
+| mode(1): colorful on light | ![captcha-mode-0.jpeg](images/captcha-mode-1.jpeg) |
+| mode(2): colorful on dark  | ![captcha-mode-0.jpeg](images/captcha-mode-2.jpeg) |
 
 ### Using complexity method
 
-| ![captcha-complexity-1.jpeg](images/captcha-complexity-1.jpeg) | ![captcha-complexity-5.jpeg](images/captcha-complexity-5.jpeg) | ![captcha-complexity-10.jpeg](images/captcha-complexity-10.jpeg) |
-| -------------------------------------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------- |
-| CaptchaBuilder::new().complexity(1)                            | CaptchaBuilder::new().complexity(5)                            | CaptchaBuilder::new().complexity(10)                             |
+| CaptchaBuilder::complexity | Captcha Preview                                                  |
+| -------------------------- | ---------------------------------------------------------------- |
+| complexity(1)              | ![captcha-complexity-1.jpeg](images/captcha-complexity-1.jpeg)   |
+| complexity(5)              | ![captcha-complexity-5.jpeg](images/captcha-complexity-5.jpeg)   |
+| complexity(10)             | ![captcha-complexity-10.jpeg](images/captcha-complexity-10.jpeg) |
 
 ### Using compression
 
-| ![captcha-compression-10.jpeg](images/captcha-compression-10.jpeg) | ![captcha-compression-40.jpeg](images/captcha-compression-40.jpeg) | ![captcha-compression-80.jpeg](images/captcha-compression-80.jpeg) |
-| ------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------ |
-| captcha.to_base64(10)                                              | captcha.to_base64(40)                                              | captcha.to_base64(80)                                              |
+| Captcha::to_base64 | Captcha Preview                                                    |
+| ------------------ | ------------------------------------------------------------------ |
+| to_base64(10)      | ![captcha-compression-10.jpeg](images/captcha-compression-10.jpeg) |
+| to_base64(40)      | ![captcha-compression-40.jpeg](images/captcha-compression-40.jpeg) |
+| to_base64(80)      | ![captcha-compression-80.jpeg](images/captcha-compression-80.jpeg) |
 
 ## Example
 
