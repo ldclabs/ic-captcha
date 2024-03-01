@@ -11,33 +11,35 @@
 
 It is inspired by [captcha-rs](https://github.com/samirdjelal/captcha-rs).
 
+![captcha logo](images/captcha-logo.jpeg)
+
 ## Usage
 
 See examples and the [API documentation] for more.
 
 ### Using mode method
 
-| CaptchaBuilder::mode       | Captcha Preview                                    |
-| -------------------------- | -------------------------------------------------- |
-| mode(0): dark on light     | ![captcha-mode-0.jpeg](images/captcha-mode-0.jpeg) |
-| mode(1): colorful on light | ![captcha-mode-0.jpeg](images/captcha-mode-1.jpeg) |
-| mode(2): colorful on dark  | ![captcha-mode-0.jpeg](images/captcha-mode-2.jpeg) |
+| CaptchaBuilder::mode       | Captcha Preview                               |
+| -------------------------- | --------------------------------------------- |
+| mode(0): dark on light     | ![captcha-mode-0](images/captcha-mode-0.jpeg) |
+| mode(1): colorful on light | ![captcha-mode-0](images/captcha-mode-1.jpeg) |
+| mode(2): colorful on dark  | ![captcha-mode-0](images/captcha-mode-2.jpeg) |
 
 ### Using complexity method
 
-| CaptchaBuilder::complexity | Captcha Preview                                                  |
-| -------------------------- | ---------------------------------------------------------------- |
-| complexity(1)              | ![captcha-complexity-1.jpeg](images/captcha-complexity-1.jpeg)   |
-| complexity(5)              | ![captcha-complexity-5.jpeg](images/captcha-complexity-5.jpeg)   |
-| complexity(10)             | ![captcha-complexity-10.jpeg](images/captcha-complexity-10.jpeg) |
+| CaptchaBuilder::complexity | Captcha Preview                                             |
+| -------------------------- | ----------------------------------------------------------- |
+| complexity(1)              | ![captcha-complexity-1](images/captcha-complexity-1.jpeg)   |
+| complexity(5)              | ![captcha-complexity-5](images/captcha-complexity-5.jpeg)   |
+| complexity(10)             | ![captcha-complexity-10](images/captcha-complexity-10.jpeg) |
 
 ### Using compression
 
-| Captcha::to_base64 | Captcha Preview                                                    |
-| ------------------ | ------------------------------------------------------------------ |
-| to_base64(10)      | ![captcha-compression-10.jpeg](images/captcha-compression-10.jpeg) |
-| to_base64(40)      | ![captcha-compression-40.jpeg](images/captcha-compression-40.jpeg) |
-| to_base64(80)      | ![captcha-compression-80.jpeg](images/captcha-compression-80.jpeg) |
+| Captcha::to_base64    | Captcha Preview                                                    |
+| --------------------- | ------------------------------------------------------------------ |
+| to_base64(10): 1.49KB | ![captcha-compression-10.jpeg](images/captcha-compression-10.jpeg) |
+| to_base64(40): 2.68KB | ![captcha-compression-40.jpeg](images/captcha-compression-40.jpeg) |
+| to_base64(80): 5.21KB | ![captcha-compression-80.jpeg](images/captcha-compression-80.jpeg) |
 
 ## Example
 
@@ -45,10 +47,10 @@ Add the following dependency to the Cargo.toml file:
 
 ```toml
 [dependencies]
-ic-captcha = "0.2"
+ic-captcha = "1.0"
 ```
 
-And then get started in your `main.rs`:
+And then get started in `main.rs`:
 
 ```rust
 use ic_captcha::CaptchaBuilder;

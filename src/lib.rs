@@ -46,11 +46,11 @@ impl CaptchaBuilder {
     pub fn new() -> Self {
         CaptchaBuilder {
             length: 4,
-            fonts: rusttype::Font::try_from_bytes(FONTS).unwrap(),
+            fonts: rusttype::Font::try_from_bytes(FONTS).expect("Invalid font for CaptchaBuilder"),
             width: 140,
             height: 40,
             mode: 1u8,
-            complexity: 4,
+            complexity: 5,
         }
     }
 
@@ -85,7 +85,7 @@ impl CaptchaBuilder {
         self
     }
 
-    /// Set the complexity of the verification code image, default is 4.
+    /// Set the complexity of the verification code image, default is 5.
     pub fn complexity(mut self, complexity: u32) -> Self {
         self.complexity = if complexity > 10 {
             10
@@ -115,14 +115,18 @@ impl CaptchaBuilder {
         };
 
         // Loop to write the verification code string into the background image
-        captcha.cyclic_write_character(&mut get_rnd_32, &self.fonts);
+        captcha.draw_characters(&mut get_rnd_32, &self.fonts);
 
-        captcha.draw_interference_line(&mut get_rnd_32);
-        captcha.draw_interference_line(&mut get_rnd_32);
+        let mut complexity = 1;
+        while complexity < self.complexity {
+            if complexity % 2 == 0 {
+                captcha.draw_interference_line(&mut get_rnd_32);
+            } else {
+                captcha.draw_interference_ellipse(&mut get_rnd_32);
+            }
 
-        captcha.draw_interference_ellipse(&mut get_rnd_32);
-        captcha.draw_interference_ellipse(&mut get_rnd_32);
-        captcha.draw_interference_ellipse(&mut get_rnd_32);
+            complexity += 1;
+        }
 
         captcha.draw_interference_noise(&mut get_rnd_32, self.complexity);
 

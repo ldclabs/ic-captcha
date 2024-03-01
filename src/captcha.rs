@@ -1,7 +1,7 @@
 use base64::{engine::general_purpose, Engine};
 use image::{ImageBuffer, ImageOutputFormat::Jpeg, Rgb};
 use imageproc::{
-    drawing::{draw_cubic_bezier_curve_mut, draw_hollow_ellipse_mut, draw_text_mut},
+    drawing::{draw_cubic_bezier_curve_mut, draw_hollow_ellipse_mut, draw_text_mut, text_size},
     noise::{gaussian_noise_mut, salt_and_pepper_noise_mut},
 };
 use rusttype::{Font, Scale};
@@ -97,13 +97,13 @@ impl Captcha {
         Self::new(text, width, height, mode)
     }
 
-    // Write characters with given font on the captcha image.
-    pub(crate) fn cyclic_write_character<R>(&mut self, get_rnd: &mut R, font: &Font)
+    // Draw characters with given font on the captcha image.
+    pub(crate) fn draw_characters<R>(&mut self, get_rnd: &mut R, font: &Font)
     where
         R: FnMut(u32) -> u32,
     {
-        let x = (self.image.width() - 10) / self.chars.len() as u32;
-        let y = self.image.height() / 2;
+        let x = (self.image.width() - 10) as i32 / self.chars.len() as i32;
+        let h = self.image.height() as i32;
 
         let scale = match self.chars.len() {
             1..=4 => SCALE_LG,
@@ -111,15 +111,17 @@ impl Captcha {
             _ => SCALE_SM,
         };
 
-        for (i, ch) in self.chars.iter().enumerate() {
+        for (i, cs) in self.chars.iter().enumerate() {
+            let c = cs.to_string();
+            let (_, ch) = text_size(scale, font, c.as_str());
             draw_text_mut(
                 &mut self.image,
                 get_color(get_rnd, self.mode),
-                5 + (i as u32 * x) as i32,
-                5 + get_rnd(y / 2) as i32 - y as i32,
+                5 + (i as i32 * x),
+                rnd_between(get_rnd, 0 - (ch / 8), h + (ch / 8) - ch),
                 scale,
                 font,
-                ch.to_string().as_str(),
+                c.as_str(),
             );
         }
     }
@@ -131,33 +133,35 @@ impl Captcha {
     {
         let width = self.image.width();
         let height = self.image.height();
-        let x1: f32 = 5.0;
-        let y1 = get_next(get_rnd, x1, height / 2);
+        let x1: i32 = 5;
+        let y1 = rnd_between(get_rnd, -5, height as i32);
 
-        let x2 = (width - 5) as f32;
-        let y2 = get_next(get_rnd, height as f32 / 2.0, height - 5);
+        let x2 = width as i32 - 5;
+        let y2 = rnd_between(get_rnd, -5, height as i32 + 5);
 
-        let ctrl_x = get_next(get_rnd, width as f32 / 4.0, width / 4 * 3);
-        let ctrl_y = get_next(get_rnd, x1, height - 5);
+        let span = width as i32 / 10;
+        let ctrl_x = rnd_between(get_rnd, span, width as i32 / 2);
+        let ctrl_y = rnd_between(get_rnd, 0, height as i32);
 
-        let ctrl_x2 = get_next(get_rnd, width as f32 / 4.0, width / 4 * 3);
-        let ctrl_y2 = get_next(get_rnd, x1, height - 5);
+        let ctrl_x2 = rnd_between(get_rnd, width as i32 / 2 + span, width as i32 - span);
+        let ctrl_y2 = rnd_between(get_rnd, 0, height as i32);
         // Randomly draw bezier curves
+        let color = get_color(get_rnd, self.mode);
         draw_cubic_bezier_curve_mut(
             &mut self.image,
-            (x1, y1),
-            (x2, y2),
-            (ctrl_x, ctrl_y),
-            (ctrl_x2, ctrl_y2),
-            get_color(get_rnd, self.mode),
+            (x1 as f32, y1 as f32),
+            (x2 as f32, y2 as f32),
+            (ctrl_x as f32, ctrl_y as f32),
+            (ctrl_x2 as f32, ctrl_y2 as f32),
+            color,
         );
         draw_cubic_bezier_curve_mut(
             &mut self.image,
-            (x1 + 2.0, y1 + 2.0),
-            (x2 + 2.0, y2 + 2.0),
-            (ctrl_x, ctrl_y),
-            (ctrl_x2, ctrl_y2),
-            get_color(get_rnd, self.mode),
+            (x1 as f32, y1 as f32 + 2.0),
+            (x2 as f32, y2 as f32 + 2.0),
+            (ctrl_x as f32, ctrl_y as f32 + 2.0),
+            (ctrl_x2 as f32, ctrl_y2 as f32 + 2.0),
+            color,
         );
     }
 
@@ -166,23 +170,12 @@ impl Captcha {
     where
         R: FnMut(u32) -> u32,
     {
-        let w = (6 + get_rnd(5)) as i32;
-        let x = get_rnd(self.image.width() - 25) as i32;
-        let y = get_rnd(self.image.height() - 15) as i32;
-        draw_hollow_ellipse_mut(
-            &mut self.image,
-            (x, y),
-            w * 2,
-            w,
-            get_color(get_rnd, self.mode),
-        );
-        draw_hollow_ellipse_mut(
-            &mut self.image,
-            (x, y),
-            w * 2 + 1,
-            w + 1,
-            get_color(get_rnd, self.mode),
-        );
+        let w = rnd_between(get_rnd, 5, self.image.height() as i32 / 3);
+        let x = rnd_between(get_rnd, 5, self.image.width() as i32 - 5);
+        let y = rnd_between(get_rnd, 5, self.image.height() as i32 - 5);
+        let color = get_color(get_rnd, self.mode);
+        draw_hollow_ellipse_mut(&mut self.image, (x, y), w * 2, w, color);
+        draw_hollow_ellipse_mut(&mut self.image, (x, y), w * 2 + 2, w + 2, color);
     }
 
     // Draw interference noise on the captcha image
@@ -219,13 +212,13 @@ where
 }
 
 // Return a random number between two numbers
-fn get_next<R>(get_rnd: &mut R, min: f32, max: u32) -> f32
+fn rnd_between<R>(get_rnd: &mut R, min: i32, max: i32) -> i32
 where
     R: FnMut(u32) -> u32,
 {
-    if min as u32 >= max {
+    if min >= max {
         return min;
     }
 
-    min + get_rnd(max - min as u32) as f32
+    min + get_rnd((max - min) as u32) as i32
 }

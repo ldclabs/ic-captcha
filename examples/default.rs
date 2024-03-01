@@ -18,9 +18,9 @@ fn main() {
         let builder = CaptchaBuilder::new()
             .length(4)
             .width(140)
-            .height(60)
+            .height(40)
             .mode(1)
-            .complexity(4);
+            .complexity(5);
 
         let captcha = builder.generate(b"random seed 0", None);
         println!("text: {}", captcha.text());
